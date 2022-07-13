@@ -1,15 +1,27 @@
 <template>
   <div>
   <div style="margin-top: 15px; text-align: right">
-    <el-button type="primary" icon="el-icon-refresh" circle style="margin-bottom: 10px" @click="refresh"></el-button>
-    <el-input size="small" placeholder="请输入内容" v-model="input" class="input-with-select" style="margin-bottom: 10px" v-if="can">
-      <el-select v-model="select" slot="prepend" placeholder="请选择">
-        <el-option label="姓名" value="1"></el-option>
-        <el-option label="身份证号" value="2"></el-option>
-        <el-option label="年龄" value="3"></el-option>
-      </el-select>
-      <el-button slot="append" @click="search" icon="el-icon-search"></el-button>
-    </el-input>
+<!--    <el-button type="primary" icon="el-icon-refresh" circle style="margin-bottom: 10px" @click="refresh"></el-button>-->
+<!--    <el-input size="small" placeholder="请输入内容" v-model="input" class="input-with-select" style="margin-bottom: 10px" v-if="can">-->
+<!--      <el-select v-model="select" slot="prepend" placeholder="请选择">-->
+<!--        <el-option label="姓名" value="1"></el-option>-->
+<!--        <el-option label="身份证号" value="2"></el-option>-->
+<!--        <el-option label="年龄" value="3"></el-option>-->
+<!--      </el-select>-->
+<!--      <el-button slot="append" @click="search" icon="el-icon-search"></el-button>-->
+<!--    </el-input>-->
+    <Input v-model="input">
+      <template #prepend>
+        <Select v-model="select" style="width: 80px">
+          <Option value="1">姓名</Option>
+          <Option value="2">身份证号</Option>
+          <Option value="3">年龄</Option>
+        </Select>
+      </template>
+      <template #append>
+        <Button icon="ios-search" @click="search"></Button>
+      </template>
+    </Input>
   </div>
   <Table border :columns="columns" :data="data" :key="tableKey">
     <template #id="{ row, index }">
@@ -67,6 +79,7 @@ import axios from "axios";
 export default {
   props: ['keyword', 'type'],
   mounted() {
+    this.select = '1'
     // const config = {'headers':{'authorization':''}};
     console.log(this.type);
     if(this.type === 1 || this.type === 2 || this.type ===3 )
