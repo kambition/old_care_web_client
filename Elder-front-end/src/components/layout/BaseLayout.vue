@@ -171,13 +171,13 @@ export default {
       }
     },
     handleLogout() {
-      // this.Logout().then(() => {
-      //   this.$Message.success("退出成功");
-      //   this.$router.replace({ name: "login" });
-      // });
-      util.storage.clear(); //测试环境
-      this.$Message.success("退出成功");
-      this.$router.replace({ name: "login" });
+      this.Logout().then(() => {
+        this.$Message.success("退出成功");
+        this.$router.replace({ name: "login" });
+      });
+      // util.storage.clear(); //测试环境
+      // this.$Message.success("退出成功");
+      // this.$router.replace({ name: "login" });
     },
     handleChange() {
       this.isChanged = !this.isChanged;
