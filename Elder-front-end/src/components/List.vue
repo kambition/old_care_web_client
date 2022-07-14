@@ -47,10 +47,11 @@
     </template>
     <template #avatar="{ row, index }">
 <!--      <el-link>查看<i class="el-icon-view el-icon&#45;&#45;right"></i> </el-link>-->
+      <!--          ！！下面修改存放监控照片的绝对路径-->
       <el-image
           style="width: 100px; height: 100px"
-          :src="url"
-          :preview-src-list="srcList">
+          :src="require('/Users/longmozhou/oldPeopleFront/Elder-front-end/src/assets/images/' + this.data[index].record)"
+          :preview-src-list="[require('/Users/longmozhou/oldPeopleFront/Elder-front-end/src/assets/images/' + this.data[index].record)]">
       </el-image>
     </template>
     <template #action="{ row, index }" >
@@ -143,11 +144,10 @@ export default {
       editBirthday: '',  // 第三列输入框
       editAddress: '',  // 第四列输入框
       tableKey: 0,
-      url: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-      srcList: [
-        'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg',
-        'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'
-      ],
+      // urls:[{url: 'back.jpeg'},{url: 'https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg'},{url:'https://fuss10.elemecdn.com/1/8e/aeffeb4de74e2fde4bd74fc7b4486jpeg.jpeg'}],
+      // srcLists: [
+      //   {srcList:['back.jpeg']}
+      // ],
       query: {name:'',age:'',i_id:''},
       columns: [],
       data: []
@@ -207,7 +207,7 @@ export default {
         url = 'http://127.0.0.1:8000/hello/';
       }
       axios.get(url).then(response => {
-        const {code, columns, items} = response.data;
+        const {code, columns, items, url} = response.data;
         this.data = items;
         this.columns = columns;
 
