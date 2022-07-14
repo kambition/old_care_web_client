@@ -1,16 +1,9 @@
 <template>
   <div>
   <div style="margin-top: 15px; text-align: right">
-<!--    <el-button type="primary" icon="el-icon-refresh" circle style="margin-bottom: 10px" @click="refresh"></el-button>-->
-<!--    <el-input size="small" placeholder="请输入内容" v-model="input" class="input-with-select" style="margin-bottom: 10px" v-if="can">-->
-<!--      <el-select v-model="select" slot="prepend" placeholder="请选择">-->
-<!--        <el-option label="姓名" value="1"></el-option>-->
-<!--        <el-option label="身份证号" value="2"></el-option>-->
-<!--        <el-option label="年龄" value="3"></el-option>-->
-<!--      </el-select>-->
-<!--      <el-button slot="append" @click="search" icon="el-icon-search"></el-button>-->
-<!--    </el-input>-->
-    <Input v-model="input">
+    <el-button type="primary" style="margin-bottom: 10px" @click="start" v-if="cannot">开始检测</el-button>
+    <el-button type="primary" icon="el-icon-refresh" circle style="margin-bottom: 10px" @click="refresh"></el-button>
+    <Input v-model="input" v-if="can">
       <template #prepend>
         <Select v-model="select" style="width: 80px">
           <Option value="1">姓名</Option>
@@ -83,7 +76,8 @@ export default {
     // const config = {'headers':{'authorization':''}};
     console.log(this.type);
     if(this.type === 1 || this.type === 2 || this.type ===3 )
-    {this.can = true}
+    {this.can = true
+    this.cannot = false}
     let url='';
     if(this.type === 1){
       // url = 'http://127.0.0.1:8000/hello/';
@@ -95,20 +89,23 @@ export default {
       // url = 'http://127.0.0.1:8000/hello/';
       url = 'volunteer/infolist';
     }else if(this.type === 4){
-      // url = 'http://127.0.0.1:8000/hello/';
-      url = 'volunteer/infolist';
+      //全部事件
+      url = '';
     }else if(this.type === 5){
-      url = 'http://127.0.0.1:8000/hello/';
+      //情绪
+      url = '';
     }else if(this.type === 6){
-      url = 'http://127.0.0.1:8000/hello/';
+      //摔倒
+      url = '';
     }else if(this.type === 7){
-      url = 'http://127.0.0.1:8000/hello/';
+      //侵入
+      url = '';
     }else{
-      url = 'http://127.0.0.1:8000/hello/';
+      //交互
+      url = '';
     }
     axios.get(url).then(response => {
       const {code, columns, items} = response.data;
-      console
       this.data = items;
       this.columns = columns;
 
@@ -133,6 +130,7 @@ export default {
   data () {
     return {
       can: false,
+      cannot: true,
       input:'',
       select:'',
       editIndex: -1,  // 当前聚焦的输入框的行数
@@ -156,6 +154,35 @@ export default {
     }
   },
   methods: {
+    start() {
+      //开始检测
+      let url = '';
+      //情感事件
+      if(this.type === 5){
+        url = '';
+      }else if(this.type === 6){
+        //摔倒事件
+        url = '';
+      }else if(this.type === 7){
+        //侵入事件
+        url = '';
+      }else if(this.type === 8){
+        //交互事件
+        url = '';
+      }
+      axios.post(url, {start: true}).then((res)=>{
+        console.log(res)
+        const{code, data}=res.data
+        if(data.result === true){
+          this.$Message.success('Success!');
+
+        }else{
+          this.$Message.error(data.detail);
+        }
+      })
+
+
+    },
     refresh() {
       console.log(this.type)
       let url='';

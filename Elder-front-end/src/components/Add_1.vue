@@ -1,6 +1,6 @@
 <template>
   <div>
-  <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="400px">
+  <el-form ref="formValidate" :model="formValidate" :rules="ruleValidate" label-width="400px" >
     <el-form-item label="老人姓名" prop="username">
       <el-input v-model="formValidate.username" style="width: 400px"></el-input>
     </el-form-item>
@@ -41,19 +41,19 @@
       <el-input v-model="formValidate.firstguardian_phone" style="width: 400px"></el-input>
     </el-form-item>
     <el-form-item label="老人照片" prop="avatar">
-      <el-upload
-          class="upload-demo"
-          ref="upload"
-          action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :limit="1"
-          :file-list="fileList"
-          :auto-upload="false">
-        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-<!--        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>-->
-        <div slot="tip" class="el-upload__tip">只能上传一个jpg/png文件，且不超过500kb</div>
-      </el-upload>
+        <el-upload
+            class="avatar-uploader"
+            :limit="1"
+            :action="uploadURL"
+            :on-remove="removeChange"
+            :on-error="uploadError"
+            :on-change="fileChange"
+            :before-upload="beforeAvatarUpload"
+            :auto-upload="false">
+          <img v-if="licenseImageUrl" :src="licenseImageUrl" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+<!--        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传</el-button>-->
     </el-form-item>
     <el-form-item label="描述" prop="health_state">
       <el-input v-model="formValidate.health_state" type="textarea" :autosize="{minRows: 2,maxRows: 5}" style="width: 400px"></el-input>
@@ -76,8 +76,11 @@ import axios from "axios";
 export default {
   data () {
     return {
+      hasFace: false,
+      uploadURL: 'admin/uploadface',
+      imgSrc: require('@/assets/images/back.jpeg'),
+      licenseImageUrl: '',
       can: false,
-      fileList: [],
       temp: {},
       formValidate: {
         id: 0,
@@ -87,7 +90,6 @@ export default {
         gender: '',
         checkin_date: '',
         checkout_date:'',
-        file_url:'',
         firstguardian_name: '',
         firstguardian_phone:'',
         phone: '',
@@ -127,6 +129,49 @@ export default {
     }
   },
   methods: {
+    fileChange (file) {
+      this.formValidate.file = file
+    },
+    beforeAvatarUpload (file) {
+      // eslint-disable-next-line no-redeclare
+      const isJPG = file.type === 'image/jpeg'
+      const isLt10M = file.size / 1024 / 1024 < 10
+      if (this.formValidate.name === '') {
+        this.$message.error('请先输入姓名')
+        return false
+      }
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt10M) {
+        this.$message.error('上传头像图片大小不能超过 10MB!')
+      }
+      return isJPG && isLt10M
+    },
+    // eslint-disable-next-line handle-callback-err
+    uploadError (err, file, filelist) {
+      this.$message.error('上传失败')
+    },
+    removeChange (file, fileList) {
+      console.log('你要移除的文件为', file.name)
+    },
+    // eslint-disable-next-line handle-callback-err
+    submitUpload () {
+      let formData = new FormData()
+      formData.append('name', this.formValidate.username)
+      formData.append('avatar', this.formValidate.file.raw)
+      console.log(formData.get('name'))
+      console.log(formData.get('avatar'))
+      axios.post('', formData).then(res => {
+        this.$message.success('上传成功')
+        this.licenseImageUrl = res.data
+        this.hasFace = true
+        console.log(this.licenseImageUrl)
+        // eslint-disable-next-line handle-callback-err
+      }).catch(err => {
+        this.$message.error('上传失败')
+      })
+    },
     collect(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
@@ -181,9 +226,6 @@ export default {
     handleReset (name) {
       this.$refs[name].resetFields();
     },
-    submitUpload() {
-      this.$refs.upload.submit();
-    },
     handleRemove(file, fileList) {
       console.log(file, fileList);
     },
@@ -194,3 +236,28 @@ export default {
   }
 }
 </script>
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>
